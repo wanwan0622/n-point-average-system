@@ -17,8 +17,31 @@ def n_point_average_system(wavedata, Fs, n):
     output = sg.lfilter(a, b, wavedata)
     return output
 
+def create_wavfile():   # sin波にホワイトノイズを重ねたwavファイルを作成
+    # sin波を生成
+    Fs = 44000  # サンプリング周波数
+    F = 440     # sin波の周波数
+    t = 5       # sin波の長さ(秒)
+    scale = 10 ** (-3/10)   # -6dB
+    N = Fs * t  # サンプル数
+
+    # sin波の配列を作成
+    sinwave = scale * np.array([np.sin(2*np.pi*F*n/Fs) for n in np.arange(N)])
+
+    # ホワイトノイズを生成
+    mean = 0.0   # 平均値
+    std = 1.0    # 標準偏差
+    whitenoise = np.random.normal(mean, std, N)
+
+    # sin波にホワイトノイズを重ねる
+    wavdata = sinwave + whitenoise
+
+    # wavファイルにして出力
+    write("original.wav", Fs, wavdata)
+
 
 if __name__ == "__main__":
+    create_wavfile()
     
     # ファイルパス
     fname = "./static/sample.wav"
