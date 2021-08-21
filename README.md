@@ -7,7 +7,7 @@ y[n] = 1/n Σ_{k=0}^{n-1} x[n-k]
 
 伝達関数の一般形 H(Z) = Σ_{k=0}^{n-1}b_k * x^{-k} / Σ_{k=0}^{n-1}a_k * x^{-k} -②
 
-①, ②を比較すると、a_k = 0, b_k = 1/n
+①, ②を比較すると、a_k = 1, b_k = 1/n
 
 # 参考
 * 読み込んだバイナリ形式のデータを変換する部分
@@ -17,3 +17,11 @@ y[n] = 1/n Σ_{k=0}^{n-1} x[n-k]
 * フィルタの部分
 
     [６．コンサートホールの反響を再現しよう](https://keep-learning.hatenablog.jp/entry/2019/07/28/000000)
+
+* sin波の作成
+
+    [pythonで正弦波の音をステレオのwavで出力する](https://qiita.com/ykumapon/items/aa990ead692e8697b9ae)
+
+* ホワイトノイズの作成
+
+    [Pythonでホワイトノイズを作成する](http://finance-algorithm.com/python_white_noise/)
