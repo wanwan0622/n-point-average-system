@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import signal as sg
 import numpy as np
 import playsound
-from scipy.io.wavfile import write
+from scipy.io.wavfile import write, read
 
 def n_point_average_system(wavedata, Fs, n):
     # wavedata:音声データ, Fs:サンプリング周波数, n:n点平均のn
@@ -12,8 +12,10 @@ def n_point_average_system(wavedata, Fs, n):
     # 伝達関数 H(z) = 1/n Σ_{k=0}^{n-1}z^{-k}
     # 伝達関数の一般形 H(Z) = Σ_{k=0}^{n-1}b_k * x^{-k} / Σ_{k=0}^{n-1}a_k * x^{-k}
 
-    a = [0]
-    b = [1/n for _ in range(n)]
+    a = [1]
+    b = []
+    for i in range(n):
+        b.append(1/n)
     output = sg.lfilter(a, b, wavedata)
     return output
 
@@ -41,11 +43,13 @@ def create_wavfile():   # sin波にホワイトノイズを重ねたwavファイ
 
 
 if __name__ == "__main__":
-    create_wavfile()
+    # 音源を生成    初回だけコメントアウト外す
+    # create_wavfile()
     
+    """
     # ファイルパス
-    fname = "./static/sample.wav"
-    wr = wave.open(fname, mode='rb')
+    fname = "./original.wav"
+    wr = wave.open(fname, 'r')
 
     # 波形データwavedata取得
     wr.rewind() # ポインタを先頭に戻す
@@ -65,7 +69,12 @@ if __name__ == "__main__":
         wavedata = data[::2]
     else:
         wavedata = data
-    
+    """
+
+    # ファイルを読み込む
+    fname = "./original.wav"
+    Fs, wavedata = read(fname)
+
     # 音源の波形グラフを表示
     time = np.arange(0, len(wavedata)) / Fs
     plt.figure(figsize=(16, 5))
@@ -94,23 +103,24 @@ if __name__ == "__main__":
     plt.show()
 
     # 加工前の音を再生
-    playsound.playsound(fname)
+    # playsound.playsound(fname)
 
-    # 3点平均システムをかけたサウンドを生成
-    three_point_average_wavedata = n_point_average_system(wavedata, Fs, 3)
+    # 10点平均システムをかけたサウンドを生成
+    ten_point_average_wavedata = n_point_average_system(wavedata, Fs, 10)
+    print(ten_point_average_wavedata)
 
     # 加工後の音の波形グラフを表示
     plt.figure(figsize=(16, 5))
-    plt.plot(time, three_point_average_wavedata)
+    plt.plot(time, ten_point_average_wavedata)
     plt.title("Wave data of the three point average sound", fontsize=12)
     plt.xlabel("Time [sec]")
     plt.ylabel("Amplitude")
-    plt.xlim(0, 5)
+    plt.xlim(0, 6)
     plt.show()
 
     # 短時間フーリエ変換
     # 窓関数はハニング窓、窓長は20msec、窓の重なりは10msec
-    F2, T2, Adft2 = sg.stft(three_point_average_wavedata, fs=Fs, window="hann", nperseg=0.02*Fs, noverlap=0.01*Fs)
+    F2, T2, Adft2 = sg.stft(ten_point_average_wavedata, fs=Fs, window="hann", nperseg=0.02*Fs, noverlap=0.01*Fs)
 
     # 振幅値をdBに変換
     P2 = 10 * np.log(np.abs(Adft2))
@@ -126,7 +136,7 @@ if __name__ == "__main__":
     plt.show()
 
     # 加工後の音を書き出し
-    # write('three_point_aberage.wav', Fs, three_point_average_wavedata)
+    write('three_point_aberage.wav', Fs, ten_point_average_wavedata)
 
     # 加工後の音を再生
-    playsound.playsound('./three_point_aberage.wav')
+    # playsound.playsound('./three_point_aberage.wav')
